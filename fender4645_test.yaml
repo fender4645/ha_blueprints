@@ -1,58 +1,49 @@
 blueprint:
-  name: IKEA Tradfri Shortcut Button (E1812)
-  description: Control actions for the IKEA Tradfri Shortcut Button E1812 using Zigbee2MQTT and MQTT triggers.
+  name: IKEA Shortcut Button Test 
+
   domain: automation
   input:
-    remote:
-      name: IKEA Tradfri Shortcut Button
-      description: Select the button entity.
+    button:
+      name: Button
+      description: IKEA Shortcut Button
       selector:
         device:
           integration: mqtt
-    single_press_action:
-      name: Single Press Action
-      description: Action to run on a single press.
+          manufacturer: IKEA
+    config_single:
+      name: Single Click Config
+      description: Action to run
       default: []
       selector:
-        action: {}
-    double_press_action:
-      name: Double Press Action
-      description: Action to run on a double press.
+        action:
+    config_double:
+      name: Double Click Config
+      description: Action to run
       default: []
       selector:
-        action: {}
-    long_press_action:
-      name: Long Press Action
-      description: Action to run on a long press.
-      default: []
-      selector:
-        action: {}
+        action:
+mode: restart
+max_exceeded: silent
 
 trigger:
-  - platform: mqtt
-    topic: !input "remote"
-    value_template: "{{ trigger.payload_json.action }}"
-    payload: "on"
-  - platform: mqtt
-    topic: !input "remote"
-    value_template: "{{ trigger.payload_json.action }}"
-    payload: "off"
-  - platform: mqtt
-    topic: !input "remote"
-    value_template: "{{ trigger.payload_json.action }}"
-    payload: long
+  - domain: mqtt
+    device_id: !input button
+    type: action
+    subtype: "off"
+    trigger: device
+  - domain: mqtt
+    device_id: !input button
+    type: action
+    subtype: "on"
+    trigger: device
 
 action:
+  - variables:
+      command: "{{ trigger.payload }}"
   - choose:
       - conditions:
-          - condition: trigger
-            id: single
-        sequence: !input "single_press_action"
+          - "{{ command == 'config_double' }}"
+        sequence: !input config_double
       - conditions:
-          - condition: trigger
-            id: double
-        sequence: !input "double_press_action"
-      - conditions:
-          - condition: trigger
-            id: long
-        sequence: !input "long_press_action"
+          - "{{ command == 'config_single' }}"
+        sequence: !input config_single
