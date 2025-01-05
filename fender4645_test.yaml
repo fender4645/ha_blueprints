@@ -32,11 +32,11 @@ trigger:
   - platform: mqtt
     topic: !input "remote"
     value_template: "{{ trigger.payload_json.action }}"
-    payload: single
+    payload: "on"
   - platform: mqtt
     topic: !input "remote"
     value_template: "{{ trigger.payload_json.action }}"
-    payload: double
+    payload: "off"
   - platform: mqtt
     topic: !input "remote"
     value_template: "{{ trigger.payload_json.action }}"
