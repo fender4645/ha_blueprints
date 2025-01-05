@@ -9,8 +9,6 @@ blueprint:
       selector:
         device:
           integration: mqtt
-          manufacturer: IKEA of Sweden
-          model: TRADFRI SHORTCUT Button
     single_press_action:
       name: Single Press Action
       description: Action to run on a single press.
