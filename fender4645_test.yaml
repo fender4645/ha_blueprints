@@ -1,0 +1,50 @@
+blueprint:
+  name: IKEA Tradfri Shortcut Button E1812 (Zigbee2MQTT)
+  description: Automate actions for the IKEA Tradfri Shortcut Button (E1812) using Zigbee2MQTT.
+  domain: automation
+  input:
+    button:
+      name: Shortcut Button
+      description: IKEA Tradfri Shortcut Button to use.
+      selector:
+        entity:
+          integration: mqtt
+          domain: sensor
+    single_press_action:
+      name: Single Press Action
+      description: Action to perform on single press.
+      default: []
+      selector:
+        action: {}
+    double_press_action:
+      name: Double Press Action
+      description: Action to perform on double press.
+      default: []
+      selector:
+        action: {}
+    long_press_action:
+      name: Long Press Action
+      description: Action to perform on long press.
+      default: []
+      selector:
+        action: {}
+
+trigger:
+  - platform: mqtt
+    topic: !input button
+
+variables:
+  payload: "{{ trigger.payload_json }}"
+  action: "{{ payload.action }}"
+
+action:
+  - choose:
+      - conditions:
+          - "{{ action == 'single' }}"
+        sequence: !input single_press_action
+      - conditions:
+          - "{{ action == 'double' }}"
+        sequence: !input double_press_action
+      - conditions:
+          - "{{ action == 'hold' }}"
+        sequence: !input long_press_action
