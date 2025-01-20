@@ -1,0 +1,67 @@
+blueprint:
+  domain: automation
+  name: IKEA Tradfri Up Down Button
+  description: IKIA Tradfri Up/Down Button.
+  input:
+    input_device:
+      name: Input Device
+      description: Select the IKIA Tradfrai up/down button device
+      selector:
+        device:
+          integration: mqtt
+          manufacturer: IKEA
+          multiple: false
+    button_up_short_press:
+      name: Single Press - Button Up
+      description: Action to run on "up" button
+      default: []
+      selector:
+        action: {}
+    button_down_short_press:
+      name: Single Press - Button Down
+      description: Action to run on "down" button
+      default: []
+      selector:
+        action: {}
+    button_any_long_press:
+      name: Long Press - Up or Down
+      description: Action to run when either button is long pressed
+      default: []
+      selector:
+        action: {}
+
+mode: parallel
+max_exceeded: silent
+trigger:
+  - id: button_up_short_event
+    device_id: !input input_device
+    domain: mqtt
+    type: action
+    subtype: open
+    trigger: device
+  - id: button_down_short_event
+    device_id: !input input_device
+    domain: mqtt
+    type: action
+    subtype: close
+    trigger: device
+  - id: button_any_long_event
+    device_id: !input input_device
+    domain: mqtt
+    type: action
+    subtype: stop
+    trigger: device
+
+action:
+- variables:
+    command: "{{ trigger.id }}"
+- choose:
+  - conditions:
+    - "{{ command == 'button_up_short_event' }}"
+    sequence: !input "button_up_short_press"
+  - conditions:
+    - "{{ command == 'button_down_short_event' }}"
+    sequence: !input "button_down_short_press"
+  - conditions:
+    - "{{ command == 'button_any_long_event' }}"
+    sequence: !input "button_any_long_press"
