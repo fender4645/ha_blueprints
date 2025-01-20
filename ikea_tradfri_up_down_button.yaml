@@ -5,7 +5,7 @@ blueprint:
   input:
     input_device:
       name: Input Device
-      description: Select the IKIA Tradfrai open/close button device
+      description: Select the IKIA Tradfri open/close button device
       selector:
         device:
           integration: mqtt
